@@ -11,7 +11,8 @@ output:
 *Load the data from the file "activity.csv" and then filter out rows for which
 there is no step count.*
 
-```{r}
+
+```r
 stepData = read.csv("activity.csv")
 stepData = stepData[!is.na(stepData$steps), ]
 ```
@@ -20,24 +21,40 @@ stepData = stepData[!is.na(stepData$steps), ]
 
 1. *Calculate the total number of steps taken per day.*
 
-```{r}
+
+```r
 stepsByDay = with(stepData, aggregate(steps, by=list(date), sum))
 names(stepsByDay) = c("date", "steps")
 ```
 
 1. *Make a histogram of the total number of steps taken each day.*
 
-```{r}
+
+```r
 library(ggplot2)
 ggplot(stepsByDay, aes(x=steps)) + geom_histogram()
 ```
 
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
+
 1. *Calculate and report the mean and median of the total number of steps taken
    per day.*
 
-```{r}
+
+```r
 mean(stepsByDay$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(stepsByDay$steps)
+```
+
+```
+## [1] 10765
 ```
 
 ## What is the average daily activity pattern?
@@ -45,34 +62,49 @@ median(stepsByDay$steps)
 1. *Make a time series plot of the 5-minute interval (x-axis) and the average
    number of steps taken, averaged accross all days (y-axis).*
 
-```{r}
+
+```r
 stepsByInterval = with(stepData, aggregate(steps, by=list(interval), mean))
 names(stepsByInterval) = c("interval", "steps")
 library(ggplot2)
 ggplot(stepsByInterval, aes(x=interval, y=steps)) + geom_line()
 ```
 
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
+
 1. *Which 5-minute interval, on average across all the days in the dataset,
    contains the maximum number of steps?*
 
-```{r}
+
+```r
 stepsByInterval[which.max(stepsByInterval$steps), ]
+```
+
+```
+##     interval    steps
+## 104      835 206.1698
 ```
 
 ## Imputing missing values
 
 1. *Calculate and report the total number of missing values in the dataset.*
 
-```{r}
+
+```r
 stepData = read.csv("activity.csv")
 sum(is.na(stepData$steps))
+```
+
+```
+## [1] 2304
 ```
 
 1. *Devise a strategy for filling in all the missing values in the dataset.
    The strategy does not need to be sophisticated.  For example, you could use
    the mean/median for that day, or the mean for that 5-minute interval, etc.*
 
-```{r}
+
+```r
 # First compute the average by 5-minute interval.
 stepsByInterval = with(stepData[!is.na(stepData$step), ],
     aggregate(steps, by=list(interval), mean))
@@ -92,7 +124,8 @@ maybeStepsDefault = function (interval, steps) {
 1. *Create a new dataset that is equal to the original dataset but with the
    missing data filled in.*
 
-```{r}
+
+```r
 # Now swap out NA values with the interval average.
 stepData$steps = mapply(maybeStepsDefault,
     interval=stepData$interval,
@@ -105,19 +138,35 @@ stepData$steps = mapply(maybeStepsDefault,
    is the impact of imputing missing data on the estimates of the total daily
    number of steps?*
 
-```{r}
+
+```r
 # First compute the total number of steps each day.
 stepsByDay = with(stepData, aggregate(steps, by=list(date), sum))
 names(stepsByDay) = c("date", "steps")
 
 # Compute the mean and median number of steps each day.
 mean(stepsByDay$steps)
-median(stepsByDay$steps)
+```
 
+```
+## [1] 10766.19
+```
+
+```r
+median(stepsByDay$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 # Create a histogram of the total number of steps taken each day.
 library(ggplot2)
 ggplot(stepsByDay, aes(x=steps)) + geom_histogram()
 ```
+
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10-1.png) 
 
 *What is the impact of imputting missing data on the estimates of the total daily
 number of steps?*
@@ -129,7 +178,8 @@ This change had very little effect.
 1. *Create a new factor variable in the dataset with two levels -- "weekday" and
    "weekend" indicating whether a given date is a weekday or a weekend day.*
 
-```{r}
+
+```r
 stepData$weekday = factor(
     weekdays(as.POSIXct(stepData$date)) %in% c("Saturday", "Sunday"),
     levels=c(FALSE, TRUE), labels=c("weekday", "weekend"))
@@ -140,7 +190,8 @@ stepData$weekday = factor(
    days or weekend days (y-axis).  See the README in the GitHub repository to
    see an example of what this plot should look like using simulated data.*
 
-```{r}
+
+```r
 # Compute average number of steps by interval and weekday/weekend type.
 stepsByInterval = with(stepData,
     aggregate(steps, by=list(interval, weekday), mean))
@@ -150,3 +201,5 @@ names(stepsByInterval) = c("interval", "weekday", "steps")
 library(ggplot2)
 ggplot(stepsByInterval, aes(x=interval, y=steps)) + geom_line() + facet_grid(weekday ~ .)
 ```
+
+![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12-1.png) 
