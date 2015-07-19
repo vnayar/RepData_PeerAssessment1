@@ -205,8 +205,9 @@ stepsByInterval = with(stepData,
 names(stepsByInterval) = c("interval", "weekday", "steps")
 
 # Plot the average number of steps by interval, with a facet for weekends and weekdays.
-library(ggplot2)
-ggplot(stepsByInterval, aes(x=interval, y=steps)) + geom_line() + facet_grid(weekday ~ .)
+library(ggplot2);
+ggplot(stepsByInterval, aes(x=interval, y=steps)) + geom_line() +
+    facet_grid(weekday ~ .) + xlab("Interval") + ylab("Number of steps")
 ```
 
 ![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12-1.png) 
